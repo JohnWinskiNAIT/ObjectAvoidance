@@ -10,6 +10,8 @@ public class Mover : MonoBehaviour
 
     RaycastHit hit;
 
+    [SerializeField] GameObject target;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -19,23 +21,40 @@ public class Mover : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (target != null)
+        {
+            transform.rotation = Quaternion.LookRotation(Vector3.RotateTowards(transform.forward, target.transform.position - transform.position, 1, 1));
+
+            if (Vector3.Distance(target.transform.position, transform.position) < 2.0f)
+            {
+                target.SetActive(false);
+                target = null;
+            }
+        }
+
+        AvoidWalls();
+        
+        transform.Translate(Vector3.forward * movementSpeed * Time.deltaTime);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        Rigidbody rb = other.GetComponentInParent<Rigidbody>();
+
+        if (rb != null)
+        {
+            if (rb.tag == "Collectable")
+            {
+                target = other.gameObject;
+            }
+        }
+    }
+
+    void AvoidWalls()
+    {
         if (Physics.BoxCast(transform.position, new Vector3(0.5f, 0.5f, 0.5f), transform.forward, out hit, Quaternion.identity, forwardDist))
         {
-            // Rotate to the right
-            //transform.Rotate(Vector3.up, 90);
-
-            // Rotate a random direction
-            //if (Random.Range(1, 3) == 1)
-            //{
-            //    transform.Rotate(Vector3.up, 90);
-            //}
-            //else
-            //{
-            //    transform.Rotate(Vector3.up, -90);
-            //}
             transform.rotation = Quaternion.LookRotation(Vector3.RotateTowards(transform.forward, -hit.normal, 1, 1));
-
-
 
             // Rotate based on what is to the sides
             isLeft = Physics.Raycast(transform.position, -transform.right, sideDist);
@@ -64,10 +83,6 @@ public class Mover : MonoBehaviour
                     transform.Rotate(Vector3.up, -90);
                 }
             }
-
         }
-        
-        
-        transform.Translate(Vector3.forward * movementSpeed * Time.deltaTime);
     }
 }
