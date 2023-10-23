@@ -5,11 +5,12 @@ using UnityEngine;
 public class Mover : MonoBehaviour
 {
     [SerializeField] float movementSpeed = 3.0f, forwardDist = 1.0f, sideDist = 3.0f;
-    
+
     bool isLeft, isRight;
 
     RaycastHit hit;
 
+    [SerializeField] List<GameObject> collectables;
     [SerializeField] GameObject target;
 
     // Start is called before the first frame update
@@ -36,7 +37,26 @@ public class Mover : MonoBehaviour
         {
             if (rb.tag == "Collectable")
             {
-                target = other.gameObject;
+                collectables.Add(other.gameObject);
+            }
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        Rigidbody rb = other.GetComponentInParent<Rigidbody>();
+
+        if (rb != null)
+        {
+            if (rb.tag == "Collectable")
+            {
+                for(int i = 0; i < collectables.Count; i++)
+                {
+                    if (other.gameObject == collectables[i])
+                    {
+                        collectables.RemoveAt(i);
+                    }
+                }
             }
         }
     }
@@ -82,6 +102,17 @@ public class Mover : MonoBehaviour
     }
     void CheckTargets()
     {
+        float distance = 10000.0f;
+        
+        for (int i = 0; i < collectables.Count; i++)
+        {
+            if (Vector3.Distance(transform.position, collectables[i].transform.position) < distance)
+            {
+                distance = Vector3.Distance(transform.position, collectables[i].transform.position);
+                target = collectables[i];
+            }
+        }
+        
         if (target != null)
         {
             if (target.gameObject.activeSelf)
@@ -97,6 +128,13 @@ public class Mover : MonoBehaviour
                     {
                         target.SetActive(false);
                         target = null;
+                        for (int i = 0; i < collectables.Count; i++)
+                        {
+                            if (target == collectables[i])
+                            {
+                                collectables.RemoveAt(i);
+                            }
+                        }
                     }
                 }
             }
