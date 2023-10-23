@@ -21,29 +21,7 @@ public class Mover : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (target != null)
-        {
-            if (target.gameObject.activeSelf)
-            {
-                if (Physics.Linecast(transform.position, target.transform.position, out hit))
-                {
-                    if (hit.transform.tag != "Wall")
-                    {
-                        transform.rotation = Quaternion.LookRotation(Vector3.RotateTowards(transform.forward, target.transform.position - transform.position, 1, 1));
-                    }
-
-                    if (Vector3.Distance(target.transform.position, transform.position) < 2.0f)
-                    {
-                        target.SetActive(false);
-                        target = null;
-                    }
-                }
-            }
-            else
-            {
-                target = null;
-            }
-        }
+        CheckTargets();
 
         AvoidWalls();
         
@@ -99,6 +77,32 @@ public class Mover : MonoBehaviour
                         transform.Rotate(Vector3.up, -90);
                     }
                 }
+            }
+        }
+    }
+    void CheckTargets()
+    {
+        if (target != null)
+        {
+            if (target.gameObject.activeSelf)
+            {
+                if (Physics.BoxCast(transform.position, new Vector3(0.5f, 0.5f, 0.5f), target.transform.position - transform.position, out hit, Quaternion.identity))
+                {
+                    if (hit.transform.tag != "Wall")
+                    {
+                        transform.rotation = Quaternion.LookRotation(Vector3.RotateTowards(transform.forward, target.transform.position - transform.position, 1, 1));
+                    }
+
+                    if (Vector3.Distance(target.transform.position, transform.position) < 2.0f)
+                    {
+                        target.SetActive(false);
+                        target = null;
+                    }
+                }
+            }
+            else
+            {
+                target = null;
             }
         }
     }
