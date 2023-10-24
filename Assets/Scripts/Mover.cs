@@ -68,11 +68,11 @@ public class Mover : MonoBehaviour
             if (hit.transform.gameObject.tag == "Wall")
             {
 
-                transform.rotation = Quaternion.LookRotation(Vector3.RotateTowards(transform.forward, -hit.normal, 1, 1));
-
                 // Rotate based on what is to the sides
                 isLeft = Physics.Raycast(transform.position, -transform.right, sideDist);
                 isRight = Physics.Raycast(transform.position, transform.right, sideDist);
+
+                transform.rotation = Quaternion.LookRotation(Vector3.RotateTowards(transform.forward, -hit.normal, 1, 1));
 
                 if (isLeft && isRight)
                 {

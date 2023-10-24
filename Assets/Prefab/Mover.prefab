@@ -288,9 +288,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5688c1ef3b94b63429bdc076356fb247, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementSpeed: 10
+  movementSpeed: 15
   forwardDist: 1
   sideDist: 3
+  collectables: []
   target: {fileID: 0}
 --- !u!54 &4737409016009550641
 Rigidbody:
